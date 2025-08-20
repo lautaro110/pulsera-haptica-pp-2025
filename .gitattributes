@@ -1,0 +1,1 @@
+*.png*.jpg*.jpeg*.mp4*.mov*.stl*.step*.3mf*.zip filter=lfs diff=lfs merge=lfs -text
