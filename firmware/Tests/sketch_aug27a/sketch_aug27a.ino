@@ -1,22 +1,17 @@
-const int pin_motor = 10;
-int valorPWM = 0;
+int motorPin=5;
 void setup() {
-  Serial.begin(9600);
-  pinMode(pin_motor, OUTPUT);
+ pinMode(motorPin, OUTPUT); 
 
 }
 
 void loop() {
-  for (valorPWM = 0; valorPWM <= 255; valorPWM += 5) {
-    analogWrite(pin_motor, valorPWM);
-
-
-    analogWrite(pin_motor, valorPWM);
-    delay(300);
-   analogWrite(pin_motor, valorPWM);
-     delay(30);
-
-    Serial.println(valorPWM);
-    delay(50);
-  }
+ for (int i = 0; i<= 255; i +=5) {
+   analogWrite(motorPin, i);
+  delay(30);
+  } 
+  for (int i= 255; i>= 0; i -=5) {
+    analogWrite(motorPin, i);
+  delay(30);
+ 
+}
 }
