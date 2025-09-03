@@ -1,42 +1,39 @@
-#include <Wire.h>
-#include <SparkFun_ADXL345.h>
+// Librerias I2C para controlar el mpu6050
+// la libreria MPU6050.h necesita I2Cdev.h, I2Cdev.h necesita Wire.h
+#include "I2Cdev.h"
+#include "MPU6050.h"
+#include "Wire.h"
 
-ADXL345 adxl;
+// La dirección del MPU6050 puede ser 0x68 o 0x69, dependiendo 
+// del estado de AD0. Si no se especifica, 0x68 estará implicito
+MPU6050 sensor;
+
+// Valores RAW (sin procesar) del acelerometro y giroscopio en los ejes x,y,z
+int ax, ay, az;
+int gx, gy, gz;
 
 void setup() {
-    Serial.begin(9600);
-    Serial.println("Iniciando ADXL345...");
+  Serial.begin(57600);    //Iniciando puerto serial
+  Wire.begin();           //Iniciando I2C  
+  sensor.initialize();    //Iniciando el sensor
 
-    adxl.powerOn();
-    adxl.setRangeSetting(16); // ±16g
-
-    Serial.println("Sensor listo.");
-    Serial.println("Rangos posibles: ±2, ±4, ±8, ±16 g");
-    Serial.println("Rango actual: ±16 g");
-    Serial.println();
+  if (sensor.testConnection()) Serial.println("Sensor iniciado correctamente");
+  else Serial.println("Error al iniciar el sensor");
 }
 
 void loop() {
-    int x_raw, y_raw, z_raw;
-    adxl.readAccel(&x_raw, &y_raw, &z_raw);
+  // Leer las aceleraciones y velocidades angulares
+  sensor.getAcceleration(&ax, &ay, &az);
+  sensor.getRotation(&gx, &gy, &gz);
 
-    float scaleFactor = 16.0 / 512.0; // ±16g → 512 counts/g
-    float x_g = x_raw * scaleFactor;
-    float y_g = y_raw * scaleFactor;
-    float z_g = z_raw * scaleFactor;
+  //Mostrar las lecturas separadas por un [tab]
+  Serial.print("a[x y z] g[x y z]:\t");
+  Serial.print(ax); Serial.print("\t");
+  Serial.print(ay); Serial.print("\t");
+  Serial.print(az); Serial.print("\t");
+  Serial.print(gx); Serial.print("\t");
+  Serial.print(gy); Serial.print("\t");
+  Serial.println(gz);
 
-    Serial.print("Raw: "); Serial.print(x_raw);
-    Serial.print(", "); Serial.print(y_raw);
-    Serial.print(", "); Serial.println(z_raw);
-
-    Serial.print("g:   "); Serial.print(x_g, 2);
-    Serial.print(", "); Serial.print(y_g, 2);
-    Serial.print(", "); Serial.println(z_g, 2);
-
-    // Gráfico de barras simple
-    Serial.print("X: "); for (int i = 0; i < abs(x_g); i++) Serial.print("#"); Serial.println();
-    Serial.print("Y: "); for (int i = 0; i < abs(y_g); i++) Serial.print("#"); Serial.println();
-    Serial.print("Z: "); for (int i = 0; i < abs(z_g); i++) Serial.print("#"); Serial.println("\n");
-
-    delay(200);
+  delay(100);
 }
